@@ -33,3 +33,27 @@ class Sender:
         async with self._lock:
             self._buffer.append(data)
             self._event.set()
+
+
+class Mutex:
+    "This mutex allows synchronized access to the wrapped value"
+
+    def __init__(self, value):
+        self._value = value
+        self._lock = Lock()
+
+    async def __aenter__(self):
+        await self._lock.acquire()
+        val = self._value
+
+        class MutexGuard:
+            def __init__(self):
+                self.value = val
+
+        self._guard = MutexGuard()
+        return self._guard
+
+    async def __aexit__(self, typ, val, ex):
+        self._value = self._guard.value
+        del self._guard
+        self._lock.release()

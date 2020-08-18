@@ -1,1 +1,1 @@
-__all__ = ["client", "serial", "packet", "channels"]
+__all__ = ["client", "serial", "packet", "sync"]
